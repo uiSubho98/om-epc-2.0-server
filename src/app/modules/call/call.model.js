@@ -12,6 +12,18 @@ const callSchema = new mongoose.Schema(
     assigned_time: { type: String, required: true },
     eng_desc: { type: String, default: "_" },
     admin_desc: { type: String, default: "_" },
+    work_type: {
+      type: String,
+      enum: [
+        "Warrenty",
+        "AMC",
+        "SiteInspection",
+        "Chargeable",
+        "PM",
+        "Service",
+        "Installation"
+      ],
+    },
     call_id: { type: String, required: true },
     customer_contact: { type: String, required: true },
     submit_date: { type: String, default: "-" },

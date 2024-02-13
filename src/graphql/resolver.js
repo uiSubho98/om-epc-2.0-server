@@ -293,6 +293,19 @@ const resolvers = {
       return call;
     },
 
+    getCallByIdCallId: async (_, { call_id }, { userId }) => {
+      if (!userId) {
+        // If the user is not authenticated (no token), throw an error
+        throw new Error("Authentication required");
+      }
+
+      const call = await Call.findOne({ call_id: call_id });
+
+      if (!call) throw new Error("Call not found");
+
+      return call;
+    },
+
     callsByEng: async (_, { eng_emp, status }, { userId }) => {
       if (!userId) {
         throw new Error("Authentication required");
@@ -309,6 +322,7 @@ const resolvers = {
       }
 
       if (!calls || calls.length === 0) throw new Error("Calls not found");
+      console.log(calls);
 
       const engineerCall = {
         eng_emp: eng_emp,
@@ -324,6 +338,7 @@ const resolvers = {
           assigned_time: call.assigned_time,
           submit_date: call.submit_date || "-",
           visit_date: call.visit_date || "-",
+          work_type: call.work_type || "-",
           report: call.report || "-",
           status: call.status,
           eng_desc: call.eng_desc || "_",
@@ -480,10 +495,37 @@ const resolvers = {
           return engNew;
         } catch (error) {
           // console.error(error.message);
-          throw new Error("Unable to create engineer");
+          throw new Error({ message: error.message });
         }
       } catch (error) {
         // console.error("Error creating engineer:", error);
+        throw new Error(error.message);
+      }
+    },
+
+    updateSign: async (_, { eng_emp, eng_sign }, { userId }) => {
+      try {
+        if (!userId) {
+          throw new Error("Authentication required");
+        }
+
+        const updateSign = await Engineer.findOneAndUpdate(
+          { eng_emp: eng_emp },
+          {
+            $set: {
+              eng_sign: eng_sign,
+            },
+          },
+          { new: true }
+        );
+
+        if (!updateSign) {
+          throw new Error("Engineer does not exist");
+        }
+
+        return updateSign;
+      } catch (error) {
+        // console.error("Error approving call:", error.message);
         throw new Error(error.message);
       }
     },
@@ -664,7 +706,7 @@ const resolvers = {
         await newReport.save();
         return newReport;
       } catch (error) {
-        throw new Error("Unable to create report");
+        throw new Error(error.message);
       }
     },
 
@@ -748,37 +790,40 @@ const resolvers = {
           throw new Error("Engineer does not exist");
         }
 
-        const existingReport = await ExpenseReport.findOne({
-          call_id: expenseReport.call_id,
-        });
+        // const existingReport = await ExpenseReport.findOne({
+        //   call_id: expenseReport.call_id,
+        // });
 
-        if (existingReport) {
-          throw new Error("This report has been already created");
-        }
+        // if (existingReport) {
+        //   throw new Error("This report has been already created");
+        // }
 
-        const existsCallId = await Call.findOne({
-          call_id: expenseReport.call_id,
-        });
+        // const existsCallId = await Call.findOne({
+        //   call_id: expenseReport.call_id,
+        // });
 
-        if (!existsCallId) {
-          throw new Error("Call id does not exist");
-        }
+        // if (!existsCallId) {
+        //   throw new Error("Call id does not exist");
+        // }
 
         const reportNew = new ExpenseReport({
           ...expenseReport,
           eng_name: expenseReport.eng_name.toLowerCase(),
         });
 
+        console.log(reportNew);
+
         try {
           await reportNew.save();
           const response = {
-            call_id: reportNew.call_id,
+            // call_id: reportNew.call_id,
             message: "Expense report submitted",
           };
           return response;
+          console.log(response);
         } catch (error) {
-          // console.error(error.message);
-          throw new Error("Unable to save expenses report");
+          console.error(error);
+          throw new Error("Unable to save expenses report", error.message);
         }
       } catch (error) {
         // console.error("Error creating expense report:", error.message);
@@ -818,6 +863,7 @@ const resolvers = {
               isApprove: upExpReport.isApprove,
               eng_desc: upExpReport.eng_desc,
               admin_desc: upExpReport.admin_desc,
+              others: upExpReport.others,
             },
           },
           { new: true }
@@ -970,7 +1016,7 @@ const resolvers = {
             message: "Call created",
           };
         } catch (error) {
-          // console.error(error.message);
+          console.error(error.message);
           throw new Error("Unable to create call");
         }
       } catch (error) {

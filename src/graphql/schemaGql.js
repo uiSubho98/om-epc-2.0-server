@@ -216,6 +216,7 @@ const typeDefs = gql`
     company_name: String
     company_location: String
     call_id: String
+    others: String
     total_kilometer: String
     expense_amount: String
     isApprove: ExpenseApproveEnum
@@ -253,7 +254,8 @@ const typeDefs = gql`
     eng_name: String!
     company_name: String!
     company_location: String!
-    call_id: String!
+    call_id: String
+    others: String
     total_kilometer: String!
     expense_amount: String!
     isApprove: ExpenseApproveEnum
@@ -286,7 +288,7 @@ const typeDefs = gql`
     email: String!
     password: String!
     designation: String
-    eng_sign: String!
+    eng_sign: String
   }
 
   type Admin {
@@ -385,6 +387,7 @@ const typeDefs = gql`
     completed: Boolean
     site_images: [String]
     expense_amount: String
+    work_type: String!
     report: String
     status: CallStatus
     eng_desc: String!
@@ -412,6 +415,7 @@ const typeDefs = gql`
     admin_desc: String!
     report: String
     status: CallStatus
+    work_type:String
   }
 
   type Attendence {
@@ -469,6 +473,7 @@ const typeDefs = gql`
     expenseReportByEng(eng_emp: String!): EngineerExpense
     callsByStatus(status: String!): [Call]
     call(_id: ID!): Call
+    getCallByIdCallId(call_id: String!): Call
     callsByEng(eng_emp: String!, status: CallStatus!): EngineerCall
     callsByDate(date: String): [Call]
     getAttendenceByEng(eng_emp: String!): GetAttendenceResponse
@@ -478,6 +483,7 @@ const typeDefs = gql`
   type Mutation {
     createAdmin(admin: AdminInput!): Admin
     createEngineer(engineer: EngineerInput!, adminId: ID!): Engineer
+    updateSign(eng_emp: String!, eng_sign: String!): Engineer
     deleteEngineer(eng_emp: String!): Message
     loginUser(userLogin: LoginInput!): Token
     # forgotPassword(email: String!): ForgotPassword
