@@ -252,6 +252,7 @@ const typeDefs = gql`
     comment: String
     provider: String
     consumer: String
+    createdAt: String
   }
 
   input ExpenseReportInput {

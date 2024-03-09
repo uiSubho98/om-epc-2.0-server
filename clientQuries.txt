@@ -703,6 +703,7 @@ query Query($eng_emp: String!) {
     comment
     provider
     consumer
+    createdAt
   }
 }
 
@@ -723,5 +724,6 @@ query GetAdminNotification {
     comment
     provider
     consumer
+    createdAt
   }
 }
