@@ -55,7 +55,6 @@ const resolvers = {
 
       const engineer = await Engineer.findOne({ eng_emp: eng_emp });
 
-      
       if (!engineer) throw new Error("Engineer not found");
 
       return engineer;
@@ -418,7 +417,7 @@ const resolvers = {
         throw new Error("Notification not found");
       }
 
-      // console.log(notification);
+      console.log(notification);
 
       return notification;
     },
@@ -441,7 +440,7 @@ const resolvers = {
         throw new Error("Notification not found");
       }
 
-      // console.log(notification);
+      console.log(notification);
 
       return notification;
     },
@@ -872,8 +871,6 @@ const resolvers = {
           consumer: "Admin",
         });
 
-        // console.log(reportNew);
-
         try {
           await reportNew.save();
           await newNotification.save();
@@ -884,8 +881,8 @@ const resolvers = {
           return response;
           // console.log(response);
         } catch (error) {
-          console.error(error);
-          throw new Error("Unable to save expenses report", error.message);
+          // console.error(error.message);
+          throw new Error(error.message);
         }
       } catch (error) {
         // console.error("Error creating expense report:", error.message);
@@ -935,13 +932,6 @@ const resolvers = {
           throw new Error("Expense report does not exist");
         }
 
-        const newNotification = new Notification({
-          comment: "Expense report updated",
-          provider: upExpReport.eng_emp,
-          consumer: "Admin",
-        });
-
-        await newNotification.save();
         return updatedExpReport;
       } catch (error) {
         // console.error("Error updating report:", error.message);
@@ -1084,7 +1074,7 @@ const resolvers = {
           provider: "Admin",
           consumer: call.eng_emp,
         });
-
+        
         try {
           await callNew.save();
           newNotification.save();
@@ -1092,8 +1082,8 @@ const resolvers = {
             message: "Call created",
           };
         } catch (error) {
-          console.error(error.message);
-          throw new Error("Unable to create call");
+          // console.error(error.message);
+          throw new Error(error.message);
         }
       } catch (error) {
         // console.error("Error creating call:", error.message);
@@ -1315,8 +1305,8 @@ const resolvers = {
 
           return response;
         } catch (error) {
-          // console.error(error.message);
-          throw new Error(error.message);
+          console.error(error.message);
+          throw new Error("Unable to save attendence");
         }
       } catch (error) {
         // console.error("Error creating expense report:", error.message);

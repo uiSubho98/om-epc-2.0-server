@@ -247,6 +247,12 @@ const typeDefs = gql`
     expense_list: [ExpenseDetails]
   }
 
+  type Notification {
+    comment: String
+    provider: String
+    consumer: String
+  }
+
   input ExpenseReportInput {
     date: String!
     time: String!
@@ -454,6 +460,7 @@ const typeDefs = gql`
   }
 
   scalar SuccessMessage
+  
 
   type Query {
     users: [User]
@@ -478,6 +485,8 @@ const typeDefs = gql`
     callsByEng(eng_emp: String!, status: CallStatus!): EngineerCall
     callsByDate(date: String): [Call]
     getAttendenceByEng(eng_emp: String!): GetAttendenceResponse
+    getEngNotification(eng_emp: String!): [Notification]
+    getAdminNotification(eng_emp: String!): [Notification]
     # getQRCode: String
   }
 
