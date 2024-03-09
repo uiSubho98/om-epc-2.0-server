@@ -8,6 +8,7 @@ import { Report } from "../app/modules/report/report.model.js";
 import { ExpenseReport } from "../app/modules/expenseReport/expenseReport.model.js";
 import { Call } from "../app/modules/call/call.model.js";
 import { Attendence } from "../app/modules/attendence/attendence.model.js";
+import { Notification } from "../app/modules/notification/notification.model.js";
 // import { client, generateQRCode } from "../server.js";
 
 const resolvers = {
@@ -54,6 +55,7 @@ const resolvers = {
 
       const engineer = await Engineer.findOne({ eng_emp: eng_emp });
 
+      
       if (!engineer) throw new Error("Engineer not found");
 
       return engineer;
@@ -322,7 +324,7 @@ const resolvers = {
       }
 
       if (!calls || calls.length === 0) throw new Error("Calls not found");
-      console.log(calls);
+      // console.log(calls);
 
       const engineerCall = {
         eng_emp: eng_emp,
@@ -396,6 +398,52 @@ const resolvers = {
       };
 
       return response;
+    },
+
+    getEngNotification: async (_, { eng_emp }, { userId }) => {
+      if (!userId) {
+        // If the user is not authenticated (no token), throw an error
+        throw new Error("Authentication required");
+      }
+
+      const existingEng = await Engineer.findOne({ eng_emp: eng_emp });
+
+      if (!existingEng) {
+        throw new Error("Engineer not found");
+      }
+
+      const notification = await Notification.find({ consumer: eng_emp });
+
+      if (!notification || notification.length === 0) {
+        throw new Error("Notification not found");
+      }
+
+      // console.log(notification);
+
+      return notification;
+    },
+
+    getAdminNotification: async (_, { eng_emp }, { userId }) => {
+      if (!userId) {
+        // If the user is not authenticated (no token), throw an error
+        throw new Error("Authentication required");
+      }
+
+      const existingEng = await Engineer.findOne({ eng_emp: eng_emp });
+
+      if (!existingEng) {
+        throw new Error("Engineer not found");
+      }
+
+      const notification = await Notification.find({ provider: eng_emp });
+
+      if (!notification || notification.length === 0) {
+        throw new Error("Notification not found");
+      }
+
+      // console.log(notification);
+
+      return notification;
     },
 
     // getQRCode: async (_, __, { userId }) => {
@@ -538,7 +586,7 @@ const resolvers = {
 
         const existingEng = await Engineer.findOne({ eng_emp: eng_emp });
 
-        console.log(existingEng._id);
+        // console.log(existingEng._id);
 
         if (!existingEng) {
           throw new Error("Engineer does not exist");
@@ -703,7 +751,14 @@ const resolvers = {
 
         const newReport = new Report({ ...report });
 
+        const newNotification = new Notification({
+          comment: "One new Report created",
+          provider: report.eng_emp,
+          consumer: "Admin",
+        });
+
         await newReport.save();
+        await newNotification.save();
         return newReport;
       } catch (error) {
         throw new Error(error.message);
@@ -811,16 +866,23 @@ const resolvers = {
           eng_name: expenseReport.eng_name.toLowerCase(),
         });
 
-        console.log(reportNew);
+        const newNotification = new Notification({
+          comment: "One new Expense Report created",
+          provider: expenseReport.eng_emp,
+          consumer: "Admin",
+        });
+
+        // console.log(reportNew);
 
         try {
           await reportNew.save();
+          await newNotification.save();
           const response = {
             // call_id: reportNew.call_id,
             message: "Expense report submitted",
           };
           return response;
-          console.log(response);
+          // console.log(response);
         } catch (error) {
           console.error(error);
           throw new Error("Unable to save expenses report", error.message);
@@ -873,6 +935,13 @@ const resolvers = {
           throw new Error("Expense report does not exist");
         }
 
+        const newNotification = new Notification({
+          comment: "Expense report updated",
+          provider: upExpReport.eng_emp,
+          consumer: "Admin",
+        });
+
+        await newNotification.save();
         return updatedExpReport;
       } catch (error) {
         // console.error("Error updating report:", error.message);
@@ -1010,8 +1079,15 @@ const resolvers = {
           eng_name: call.eng_name.toLowerCase(),
         });
 
+        const newNotification = new Notification({
+          comment: "One new call created",
+          provider: "Admin",
+          consumer: call.eng_emp,
+        });
+
         try {
           await callNew.save();
+          newNotification.save();
           return {
             message: "Call created",
           };
@@ -1228,7 +1304,7 @@ const resolvers = {
           time: attendence.time,
           eng_name: attendence.eng_name.toLowerCase(),
         });
-        console.log(submitedAttendence);
+        // console.log(submitedAttendence);
         try {
           await submitedAttendence.save();
           const response = {
@@ -1239,8 +1315,8 @@ const resolvers = {
 
           return response;
         } catch (error) {
-          console.error(error.message);
-          throw new Error("Unable to save attendence");
+          // console.error(error.message);
+          throw new Error(error.message);
         }
       } catch (error) {
         // console.error("Error creating expense report:", error.message);
