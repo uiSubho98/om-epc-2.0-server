@@ -417,7 +417,7 @@ const resolvers = {
         throw new Error("Notification not found");
       }
 
-      console.log(notification);
+      // console.log(notification);
 
       return notification;
     },
@@ -440,7 +440,7 @@ const resolvers = {
         throw new Error("Notification not found");
       }
 
-      console.log(notification);
+      // console.log(notification);
 
       return notification;
     },
@@ -1074,7 +1074,7 @@ const resolvers = {
           provider: "Admin",
           consumer: call.eng_emp,
         });
-        
+
         try {
           await callNew.save();
           newNotification.save();
@@ -1305,8 +1305,8 @@ const resolvers = {
 
           return response;
         } catch (error) {
-          console.error(error.message);
-          throw new Error("Unable to save attendence");
+          // console.error(error.message);
+          throw new Error(error.message);
         }
       } catch (error) {
         // console.error("Error creating expense report:", error.message);
@@ -1332,6 +1332,30 @@ const resolvers = {
     //     throw new Error("Failed to send message");
     //   }
     // },
+
+    deleteNotification: async (_, { _id }, { userId }) => {
+      try {
+        if (!userId) {
+          throw new Error("Authentication required");
+        }
+
+        // Use findByIdAndDelete to find and delete the report
+        const deleteNotification = await Notification.findOneAndDelete({
+          _id: _id,
+        });
+
+        if (!deleteNotification) {
+          throw new Error("Notification does not exist");
+        }
+
+        return {
+          message: "notification deleted successfully",
+        };
+      } catch (error) {
+        // console.error("Error deleting call:", error.message);
+        throw new Error(error.message);
+      }
+    },
   },
 };
 

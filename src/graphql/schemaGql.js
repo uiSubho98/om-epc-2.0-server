@@ -248,6 +248,7 @@ const typeDefs = gql`
   }
 
   type Notification {
+    _id: String
     comment: String
     provider: String
     consumer: String
@@ -523,6 +524,7 @@ const typeDefs = gql`
     deleteCall(_id: ID!): Message
     submitAttendence(attendence: AttendenceInput!): SubmitAttendenceResponse
     # sendPdf(pdf_link: String!, customer_num: String!): String
+    deleteNotification(_id: ID!): Message
   }
 `;
 

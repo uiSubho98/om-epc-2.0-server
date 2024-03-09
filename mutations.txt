@@ -586,3 +586,22 @@ mutation Atendense($attendence: AttendenceInput!){
   "authorization": "yourTokenHere"
 }
 
+
+//-------DELETE NOTIFICATION
+
+mutation Mutation($_id: ID!) {
+  deleteNotification(_id: $_id) {
+    message
+  }
+}
+### Variables
+{
+  "_id": "65ec037bbfc6b6467904e33a"
+}
+
+# CHECK AUTHORIZATION
+{
+  "authorization": "yourTokenHere"
+}
+
+
