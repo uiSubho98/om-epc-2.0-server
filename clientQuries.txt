@@ -717,21 +717,11 @@ query Query($eng_emp: String!) {
 }
 
 //-------GET ADMIN NOTIFICATION
-query GetAdminNotification($eng_emp: String!) {
-  getAdminNotification(eng_emp: $eng_emp) {
+query GetAdminNotification {
+  getAdminNotification {
     _id
     comment
     provider
     consumer
   }
-}
-
-### Variables
-{
-  "eng_emp": "test/036"
-}
-
-# CHECK AUTHORIZATION
-{
-  "authorization": "yourTokenHere"
 }

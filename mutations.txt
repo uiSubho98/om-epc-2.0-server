@@ -594,6 +594,8 @@ mutation Mutation($_id: ID!) {
     message
   }
 }
+
+
 ### Variables
 {
   "_id": "65ec037bbfc6b6467904e33a"

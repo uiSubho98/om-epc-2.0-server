@@ -487,7 +487,7 @@ const typeDefs = gql`
     callsByDate(date: String): [Call]
     getAttendenceByEng(eng_emp: String!): GetAttendenceResponse
     getEngNotification(eng_emp: String!): [Notification]
-    getAdminNotification(eng_emp: String!): [Notification]
+    getAdminNotification: [Notification]
     # getQRCode: String
   }
 
