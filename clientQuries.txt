@@ -531,6 +531,22 @@ query ExpenseReportByEngineer($eng_emp: String!){
   "authorization": "yourTokenHere"
 }
 
+//-------GET ALL CALLS
+query GetAllCalls{
+  getAllCalls{
+    call_id
+    createdAt
+    submit_date
+    status
+  }
+}
+
+
+# CHECK AUTHORIZATION
+{
+  "authorization": "yourTokenHere"
+}
+
 //-------GET CALLS BY STATUS
 query GetCallsByStatus($status: String!) {
   calls: callsByStatus(status: $status) {
@@ -550,6 +566,7 @@ query GetCallsByStatus($status: String!) {
     expense_amount
     report
     status
+    createdAt
   }
 }
 

@@ -365,6 +365,7 @@ const typeDefs = gql`
     call_id: String!
     customer_contact: String!
     submit_date: String
+    submit_time: String
     visit_date: String
     work_type: String
     completed: Boolean
@@ -372,6 +373,7 @@ const typeDefs = gql`
     expense_amount: String
     report: String
     status: CallStatus
+    createdAt: String
   }
 
   input UpdateCallInput {
@@ -481,6 +483,7 @@ const typeDefs = gql`
     expenseReport(_id: ID!): ExpenseReport
     expenseReportByDate(date: String!): [ExpenseReport]
     expenseReportByEng(eng_emp: String!): EngineerExpense
+    getAllCalls: [Call]
     callsByStatus(status: String!): [Call]
     call(_id: ID!): Call
     getCallByIdCallId(call_id: String!): Call

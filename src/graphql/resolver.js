@@ -36,6 +36,7 @@ const resolvers = {
 
       return user;
     },
+
     engineers: async (_, __, { userId }) => {
       if (!userId) {
         // If the user is not authenticated (no token), throw an error
@@ -253,6 +254,27 @@ const resolvers = {
       return engineerExpense;
     },
 
+    getAllCalls: async (_, __, { userId }) => {
+      try {
+        if (!userId) {
+          // If the user is not authenticated (no token), throw an error
+          throw new Error("Authentication required");
+        }
+
+        const calls = await Call.find();
+
+        if (!calls || calls.length === 0) {
+          throw new Error("Calls not found");
+        }
+
+        return calls;
+      } catch (error) {
+        // Handle the error here
+        // console.error("Error in getAllCalls:", error.message);
+        throw error.message;
+      }
+    },
+
     callsByStatus: async (_, { status }, { userId }) => {
       if (!userId) {
         // If the user is not authenticated (no token), throw an error
@@ -265,10 +287,10 @@ const resolvers = {
         calls = await Call.find();
       } else if (status === "TODAY") {
         const today = new Date();
-        today.setHours(6, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0 for the start of the day
+        today.setHours(6, 0, 0, 0);
 
         const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1); // Get the start of the next day
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
         calls = await Call.find({
           createdAt: { $gte: today, $lt: tomorrow },
@@ -743,6 +765,21 @@ const resolvers = {
         }
 
         const newReport = new Report({ ...report });
+
+        if (newReport.site_images?.length > 0) {
+          const submittedTime = newReport.time;
+          // console.log(newReport)
+          // console.log(submittedTime)
+          await Call.findOneAndUpdate(
+            { call_id: report.call_id },
+            {
+              $set: {
+                submit_time: submittedTime,
+              },
+            },
+            { new: true }
+          );
+        }
 
         const newNotification = new Notification({
           comment: "One new Report created",

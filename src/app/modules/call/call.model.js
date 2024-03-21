@@ -27,6 +27,7 @@ const callSchema = new mongoose.Schema(
     call_id: { type: String, required: true },
     customer_contact: { type: String, required: true },
     submit_date: { type: String, default: "-" },
+    submit_time: { type: String, default: "-" },
     visit_date: { type: String, default: "-" },
     completed: { type: Boolean, default: false },
     site_images: [
