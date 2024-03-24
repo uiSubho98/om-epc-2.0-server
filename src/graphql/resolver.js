@@ -766,20 +766,20 @@ const resolvers = {
 
         const newReport = new Report({ ...report });
 
-        if (newReport.site_images?.length > 0) {
-          const submittedTime = newReport.time;
-          // console.log(newReport)
-          // console.log(submittedTime)
-          await Call.findOneAndUpdate(
-            { call_id: report.call_id },
-            {
-              $set: {
-                submit_time: submittedTime,
-              },
+        // if (newReport.site_images?.length > 0) {
+        const submittedTime = newReport.time;
+        // console.log(newReport)
+        // console.log(submittedTime)
+        await Call.findOneAndUpdate(
+          { call_id: report.call_id },
+          {
+            $set: {
+              submit_time: submittedTime,
             },
-            { new: true }
-          );
-        }
+          },
+          { new: true }
+        );
+        // }
 
         const newNotification = new Notification({
           comment: "One new Report created",
