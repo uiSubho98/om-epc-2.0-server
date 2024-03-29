@@ -394,6 +394,7 @@ const typeDefs = gql`
     call_id: String!
     customer_contact: String!
     submit_date: String
+    submit_time: String
     visit_date: String
     completed: Boolean
     site_images: [String]
@@ -464,7 +465,6 @@ const typeDefs = gql`
   }
 
   scalar SuccessMessage
-  
 
   type Query {
     users: [User]

@@ -1206,6 +1206,8 @@ const resolvers = {
               customer_contact: call.customer_contact,
               submit_date:
                 call.submit_date === "-" ? undefined : call.submit_date,
+              submit_time:
+                call.submit_time === "-" ? undefined : call.submit_time,
               visit_date:
                 call.visit_date === "-" ? undefined : call.submit_date,
               completed: call.completed,
