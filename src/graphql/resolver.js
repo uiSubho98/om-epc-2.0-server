@@ -386,6 +386,27 @@ const resolvers = {
       return calls;
     },
 
+    getLastCall: async (_, __, { userId }) => {
+      try {
+        if (!userId) {
+          // If the user is not authenticated (no token), throw an error
+          throw new Error("Authentication required");
+        }
+
+        const calls = await Call.find().sort({ createdAt: -1 }).limit(1);
+
+        if (!calls || calls.length === 0) {
+          throw new Error("Calls not found");
+        }
+
+        return calls[0];
+      } catch (error) {
+        // Handle the error here
+        // console.error("Error in getLastCall:", error.message);
+        throw error.message;
+      }
+    },
+
     getAttendenceByEng: async (_, { eng_emp }, { userId }) => {
       if (!userId) {
         // If the user is not authenticated (no token), throw an error
@@ -972,7 +993,7 @@ const resolvers = {
 
     approveExpenseReport: async (
       _,
-      { call_id, approveStatus, admin_desc },
+      { call_id, _id, approveStatus, admin_desc },
       { userId }
     ) => {
       try {
@@ -980,69 +1001,102 @@ const resolvers = {
           throw new Error("Authentication required");
         }
 
-        // const existsReport = await ExpenseReport.findOne({ call_id: call_id });
-
-        const existsCallId = await Call.findOne({ call_id: call_id });
-
-        // if (existsReport) {
-        //   throw new Error("Expense report already exist");
-        // }
-
-        const expenseReport = await ExpenseReport.findOne({ call_id: call_id });
-
+        // console.log(_id);
         let reportStatus;
 
-        if (existsCallId) {
-          if (approveStatus == "APPROVE") {
-            reportStatus = await ExpenseReport.findOneAndUpdate(
-              { call_id: call_id },
-              {
-                $set: {
-                  isApprove: approveStatus,
-                  status: approveStatus,
-                  admin_desc: "Report approved",
+        if (call_id === "") {
+          const existsExpense = await ExpenseReport.findById(_id);
+          console.log(existsExpense);
+          if (existsExpense) {
+            if (approveStatus == "APPROVE") {
+              reportStatus = await ExpenseReport.findByIdAndUpdate(
+                { _id },
+                {
+                  $set: {
+                    isApprove: approveStatus,
+                    status: approveStatus,
+                    admin_desc: "Report approved",
+                  },
                 },
-              },
-              { new: true }
-            );
-
-            await Call.findOneAndUpdate(
-              { call_id: call_id },
-              {
-                $set: {
-                  expense_amount: expenseReport.expense_amount,
+                { new: true }
+              );
+            } else if (approveStatus == "REJECT") {
+              reportStatus = await ExpenseReport.findByIdAndUpdate(
+                { _id },
+                {
+                  $set: {
+                    isApprove: approveStatus,
+                    status: approveStatus,
+                    admin_desc: admin_desc,
+                  },
                 },
-              },
-              { new: true }
-            );
-          } else if (approveStatus == "REJECT") {
-            reportStatus = await ExpenseReport.findOneAndUpdate(
-              { call_id: call_id },
-              {
-                $set: {
-                  isApprove: approveStatus,
-                  status: approveStatus,
-                  admin_desc: admin_desc,
-                },
-              },
-              { new: true }
-            );
-
-            await Call.findOneAndUpdate(
-              { call_id: call_id },
-              {
-                $set: {
-                  expense_amount: "",
-                },
-              },
-              { new: true }
-            );
+                { new: true }
+              );
+            }
+            // console.log(reportStatus)
+            return reportStatus;
           }
         } else {
-          throw new Error("Call id does not exist");
+          const existsCallId = await Call.findOne({ call_id: call_id });
+
+          const expenseReport = await ExpenseReport.findOne({
+            call_id: call_id,
+          });
+
+          if (existsCallId) {
+            if (approveStatus == "APPROVE") {
+              reportStatus = await ExpenseReport.findOneAndUpdate(
+                { call_id: call_id },
+                {
+                  $set: {
+                    isApprove: approveStatus,
+                    status: approveStatus,
+                    admin_desc: "Report approved",
+                  },
+                },
+                { new: true }
+              );
+
+              await Call.findOneAndUpdate(
+                { call_id: call_id },
+                {
+                  $set: {
+                    expense_amount: expenseReport.expense_amount,
+                  },
+                },
+                { new: true }
+              );
+            } else if (approveStatus == "REJECT") {
+              reportStatus = await ExpenseReport.findOneAndUpdate(
+                { call_id: call_id },
+                {
+                  $set: {
+                    isApprove: approveStatus,
+                    status: approveStatus,
+                    admin_desc: admin_desc,
+                  },
+                },
+                { new: true }
+              );
+
+              await Call.findOneAndUpdate(
+                { call_id: call_id },
+                {
+                  $set: {
+                    expense_amount: "",
+                  },
+                },
+                { new: true }
+              );
+            }
+          } else {
+            throw new Error("Call id does not exist");
+          }
+
+          return reportStatus;
         }
 
-        return reportStatus;
+        // const existsReport = await ExpenseReport.findOne({ call_id: call_id });
       } catch (error) {
         // console.error("Error approving report:", error.message);
         throw new Error(error.message);

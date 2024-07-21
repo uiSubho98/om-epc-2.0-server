@@ -547,6 +547,20 @@ query GetAllCalls{
   "authorization": "yourTokenHere"
 }
 
+//-------GET LAST CALLS
+query GetLastCall{
+  getLastCall{
+    call_id
+    createdAt
+  }
+}
+
+
+# CHECK AUTHORIZATION
+{
+  "authorization": "yourTokenHere"
+}
+
 //-------GET CALLS BY STATUS
 query GetCallsByStatus($status: String!) {
   calls: callsByStatus(status: $status) {

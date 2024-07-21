@@ -489,6 +489,7 @@ const typeDefs = gql`
     getCallByIdCallId(call_id: String!): Call
     callsByEng(eng_emp: String!, status: CallStatus!): EngineerCall
     callsByDate(date: String): [Call]
+    getLastCall: Call
     getAttendenceByEng(eng_emp: String!): GetAttendenceResponse
     getEngNotification(eng_emp: String!): [Notification]
     getAdminNotification: [Notification]
@@ -511,7 +512,8 @@ const typeDefs = gql`
     ): SubmitExpenseResponse
     updateExpenseReport(upExpReport: ExpenseReportInput!): ExpenseReport
     approveExpenseReport(
-      call_id: String!
+      call_id: String
+      _id: String
       approveStatus: ExpenseApproveEnum!
       admin_desc: String
     ): ExpenseReport
